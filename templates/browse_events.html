@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Events — EventOps AI{% endblock %}
+
+{% block content %}
+<style>
+    .events-page {
+        min-height: 100vh;
+        padding: 30px 0;
+        background: linear-gradient(135deg, #eef5ff, #f8f4ff, #e7fffb);
+    }
+
+    .events-hero {
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        background: linear-gradient(110deg, #0866f5, #6438ef, #b13cf5);
+        margin-bottom: 25px;
+        box-shadow: 0 10px 25px #5369ef30;
+    }
+
+    .events-hero h2 {
+        font-weight: 800;
+        font-size: 2rem;
+    }
+
+    .events-hero p {
+        margin-bottom: 0;
+        opacity: .9;
+    }
+
+    .btn-back {
+        color: white;
+        text-decoration: none;
+        border: 1px solid white;
+        border-radius: 10px;
+        padding: 10px 16px;
+    }
+
+    .btn-back:hover {
+        background: white;
+        color: #0866f5;
+    }
+
+    .search-panel {
+        background: white;
+        padding: 18px;
+        border-radius: 15px;
+        margin-bottom: 28px;
+        box-shadow: 0 5px 20px #25385810;
+    }
+
+    .search-panel .form-control,
+    .search-panel .form-select {
+        min-height: 45px;
+        border-radius: 9px;
+        border-color: #d8e1f0;
+    }
+
+    .section-heading {
+        color: #102c68;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .event-card {
+        height: 100%;
+        overflow: hidden;
+        border: none;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 6px 20px #25385812;
+        transition: .25s ease;
+    }
+
+    .event-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px #25385822;
+    }
+
+    .event-banner {
+        height: 100px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+    }
+
+    .event-banner i {
+        font-size: 2.7rem;
+    }
+
+    .banner-1 { background: linear-gradient(120deg, #243bff, #1976ff, #721bea); }
+    .banner-2 { background: linear-gradient(120deg, #6420e8, #b42ff0); }
+    .banner-3 { background: linear-gradient(120deg, #009e78, #00d1ae); }
+    .banner-4 { background: linear-gradient(120deg, #ff9d00, #ff5a16); }
+    .banner-5 { background: linear-gradient(120deg, #00aaa9, #04d5c1); }
+    .banner-6 { background: linear-gradient(120deg, #ff3864, #ec1744); }
+
+    .event-status {
+        background: #00c982;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .event-body {
+        padding: 20px;
+    }
+
+    .event-category {
+        display: inline-block;
+        background: #e2efff;
+        color: #075cf5;
+        padding: 5px 11px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .event-title {
+        color: #142957;
+        font-weight: 800;
+        font-size: 18px;
+    }
+
+    .event-description {
+        color: #607394;
+        min-height: 48px;
+        font-size: 14px;
+    }
+
+    .event-info {
+        color: #526581;
+        font-size: 13px;
+        margin: 15px 0;
+    }
+
+    .event-info i {
+        color: #0866ff;
+        width: 22px;
+    }
+
+    .btn-event {
+        background: linear-gradient(100deg, #0866f5, #3157ef);
+        color: white;
+        border: none;
+        border-radius: 9px;
+        padding: 10px;
+        font-weight: 600;
+    }
+
+    .btn-event:hover {
+        color: white;
+        background: linear-gradient(100deg, #034ac0, #4820c7);
+    }
+
+    .btn-register {
+        border: 1px solid #0866ff;
+        color: #0866ff;
+        background: white;
+        border-radius: 9px;
+        padding: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .btn-register:hover {
+        background: #0866ff;
+        color: white;
+    }
+
+    .empty-events {
+        text-align: center;
+        background: white;
+        padding: 50px 20px;
+        border-radius: 18px;
+        color: #64748b;
+    }
+</style>
+
+<div class="events-page">
+    <div class="container">
+
+        <div class="events-hero">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2>
+                        <i class="bi bi-calendar2-heart me-2"></i>
+                        Browse All Events
+                    </h2>
+                    <p>Discover exciting events and find your next experience.</p>
+                </div>
+
+                <a href="{{ url_for('dashboard') }}" class="btn-back">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="search-panel">
+            <div class="row g-3">
+                <div class="col-lg-5">
+                    <input type="text" id="eventSearch"
+                           class="form-control"
+                           placeholder="Search events or location...">
+                </div>
+
+                <div class="col-lg-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <button type="button" id="searchButton"
+                            class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                </div>
+
+                <div class="col-lg-2">
+                    <button type="button" id="resetButton"
+                            class="btn btn-light w-100">
+                        <i class="bi bi-arrow-repeat me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="section-heading">
+                <i class="bi bi-calendar-event text-primary me-2"></i>
+                Upcoming Events
+            </h4>
+            <span class="badge rounded-pill text-bg-primary" id="eventCount">
+                {{ events|length }} events found
+            </span>
+        </div>
+
+        <div class="row g-4" id="eventGrid">
+            {% for event in events %}
+            <div class="col-md-6 col-lg-4 event-item"
+                 data-title="{{ event.title|lower }}"
+                 data-location="{{ (event.location or '')|lower }}"
+                 data-status="{{ (event.status or 'upcoming')|lower }}">
+
+                <div class="event-card">
+                    <div class="event-banner banner-{{ ((loop.index0 % 6) + 1) }}">
+                        <i class="bi {% if loop.index0 % 6 == 0 %}bi-robot{% elif loop.index0 % 6 == 1 %}bi-code-slash{% elif loop.index0 % 6 == 2 %}bi-laptop{% elif loop.index0 % 6 == 3 %}bi-people{% elif loop.index0 % 6 == 4 %}bi-cloud{% else %}bi-bar-chart-line{% endif %}"></i>
+
+                        <span class="event-status">
+                            {{ event.status or 'Upcoming' }}
+                        </span>
+                    </div>
+
+                    <div class="event-body">
+                        <span class="event-category">
+                            <i class="bi bi-stars me-1"></i> Event
+                        </span>
+
+                        <h5 class="event-title">{{ event.title }}</h5>
+
+                        <p class="event-description">
+                            {{ event.description or 'Discover more about this exciting event.' }}
+                        </p>
+
+                        <div class="event-info">
+                            <div class="mb-2">
+                                <i class="bi bi-calendar-event"></i>
+                                {{ event.date or 'Date to be announced' }}
+                            </div>
+
+                            <div class="mb-2">
+                                <i class="bi bi-clock"></i>
+                                {{ event.time or 'Time to be announced' }}
+                            </div>
+
+                            <div class="mb-2">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                {{ event.location or 'Location to be announced' }}
+                            </div>
+
+                            <div>
+                                <i class="bi bi-people-fill"></i>
+                                Capacity:
+                                {{ event.capacity if event.capacity is not none else 'Not specified' }}
+                            </div>
+                        </div>
+
+                        <a href="{{ url_for('event_detail', event_id=event.id) }}"
+                           class="btn btn-event w-100">
+                            <i class="bi bi-eye me-2"></i>
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="empty-events">
+                    <i class="bi bi-calendar-x display-3 text-primary"></i>
+                    <h4 class="mt-3">No Events Available</h4>
+                    <p>New events will appear here when they are added.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="empty-events mt-3 d-none" id="noResults">
+            <i class="bi bi-search display-4 text-primary"></i>
+            <h4 class="mt-3">No Matching Events</h4>
+            <p>Try another search term or status filter.</p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const searchInput = document.getElementById('eventSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchButton = document.getElementById('searchButton');
+    const resetButton = document.getElementById('resetButton');
+    const eventItems = document.querySelectorAll('.event-item');
+    const eventCount = document.getElementById('eventCount');
+    const noResults = document.getElementById('noResults');
+
+    function filterEvents() {
+        const query = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value.toLowerCase();
+        let visibleCount = 0;
+
+        eventItems.forEach(function (item) {
+            const title = item.dataset.title || '';
+            const location = item.dataset.location || '';
+            const eventStatus = item.dataset.status || '';
+
+            const matchesSearch =
+                title.includes(query) || location.includes(query);
+
+            const matchesStatus =
+                status === '' || eventStatus === status;
+
+            const visible = matchesSearch && matchesStatus;
+
+            item.classList.toggle('d-none', !visible);
+
+            if (visible) {
+                visibleCount++;
+            }
+        });
+
+        eventCount.textContent = visibleCount + ' events found';
+        noResults.classList.toggle('d-none', visibleCount !== 0);
+    }
+
+    searchButton.addEventListener('click', filterEvents);
+
+    searchInput.addEventListener('input', filterEvents);
+    statusFilter.addEventListener('change', filterEvents);
+
+    resetButton.addEventListener('click', function () {
+        searchInput.value = '';
+        statusFilter.value = '';
+        filterEvents();
+    });
+</script>
+{% endblock %}

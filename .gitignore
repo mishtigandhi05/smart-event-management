@@ -6,3 +6,24 @@ __pycache__/
 .env
 .idea/
 .pytest_cache/
+# Environment variables and secrets
+.env
+**/.env
+
+# Virtual environments
+.venv/
+**/.venv/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Local databases
+instance/*.db
+**/instance/*.db
+
+# IDE files
+.idea/
+# Nested duplicate repository
+/smart-event-management/

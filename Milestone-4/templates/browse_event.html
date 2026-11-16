@@ -1,0 +1,165 @@
+
+{% extends "base.html" %}
+
+{% block title %}Browse Events — EventOps AI{% endblock %}
+
+{% block content %}
+
+<style>
+.events-page {
+    min-height: 100vh;
+    padding: 35px 0;
+    background: linear-gradient(135deg, #eef5ff, #f8f4ff);
+}
+
+.events-header {
+    padding: 30px;
+    border-radius: 18px;
+    color: white;
+    background: linear-gradient(110deg, #0866f5, #7138ef, #a435e8);
+    margin-bottom: 30px;
+}
+
+.event-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px #25385812;
+    height: 100%;
+    transition: transform .2s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+.event-card .card-body {
+    padding: 22px;
+}
+
+.event-date {
+    color: #0866f5;
+    font-weight: 600;
+}
+
+.search-box {
+    border-radius: 10px;
+    padding: 12px;
+}
+</style>
+
+<div class="events-page">
+    <div class="container">
+
+        <div class="events-header">
+            <h2 class="fw-bold">
+                <i class="bi bi-calendar-event me-2"></i>
+                Browse All Events
+            </h2>
+            <p class="mb-0">
+                Discover upcoming events, conferences, hackathons and workshops.
+            </p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <input
+                    type="text"
+                    id="eventSearch"
+                    class="form-control search-box"
+                    placeholder="Search events by name, venue or description..."
+                >
+            </div>
+        </div>
+
+        <div class="row g-4" id="eventContainer">
+
+            {% for event in events %}
+
+            <div class="col-md-6 col-lg-4 event-item">
+
+                <div class="card event-card">
+
+                    <div class="card-body">
+
+                        <span class="badge bg-primary mb-3">
+                            {{ event.status or 'Upcoming' }}
+                        </span>
+
+                        <h5 class="fw-bold">
+                            {{ event.title }}
+                        </h5>
+
+                        <p class="text-muted">
+                            {{ event.description or 'Join us for this exciting event.' }}
+                        </p>
+
+                        <hr>
+
+                        <p class="event-date mb-2">
+                            <i class="bi bi-calendar3 me-2"></i>
+                            {{ event.date or 'Date to be announced' }}
+                        </p>
+
+                        <p class="text-muted mb-3">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            {{ event.venue.name if event.venue else 'Venue to be announced' }}
+                        </p>
+
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('register_event', event_id=event.id) }}"
+                               class="btn btn-primary w-100">
+                                <i class="bi bi-ticket-perforated me-2"></i>
+                                Register Now
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}"
+                               class="btn btn-primary w-100">
+                                Login to Register
+                            </a>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-calendar-x display-3 text-primary"></i>
+                <h4 class="mt-3">No Events Available</h4>
+                <p class="text-muted">
+                    New events will appear here when published.
+                </p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const search = document.getElementById("eventSearch");
+
+    search.addEventListener("input", function () {
+
+        const query = this.value.toLowerCase();
+
+        document.querySelectorAll(".event-item").forEach(function (item) {
+
+            item.style.display =
+                item.innerText.toLowerCase().includes(query) ? "" : "none";
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}
